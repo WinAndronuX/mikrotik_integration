@@ -25,17 +25,10 @@ doc_events = {
     },
     # M-Pesa integration handlers
     "Mpesa Express Request": {
-        "on_update": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.handle_mpesa_payment"
+        "on_payment_authorized": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.on_payment_authorized"
     },
     "Mpesa C2B Register": {
-        "on_update": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.handle_mpesa_payment"
-    },
-    # Add M-Pesa payment handlers
-    "Mpesa C2B Register": {
-        "on_payment_authorized": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.handle_mpesa_payment"
-    },
-    "Mpesa Express Request": {
-        "on_payment_authorized": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.handle_mpesa_payment"
+        "on_payment_authorized": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.on_payment_authorized"
     }
 }
 
@@ -62,12 +55,6 @@ scheduler_events = {
 after_migrate = [
     "mikrotik_integration.setup.after_migrate"
 ]
-
-# M-Pesa Payment Handlers
-mpesa_payment_handlers = {
-    "on_payment_authorized": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.handle_mpesa_payment",
-    "on_payment_failed": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.handle_mpesa_payment"
-}
 
 # Dashboard charts
 charts = [

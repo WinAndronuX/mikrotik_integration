@@ -259,28 +259,35 @@ class CustomerSubscription(Document):
             frappe.log_error(f"M-Pesa payment error for subscription {self.name}: {str(e)}")
             return {"success": False, "message": str(e)}
 
-    def on_payment_authorized(self, payment_doc):
-        """Called by frappe-mpsa-payments when payment is authorized"""
+    def handle_payment_success(self, payment_reference=None, payment_type="M-Pesa"):
+        """Centralized payment success handler"""
         try:
             self.payment_status = "Completed"
             self.payment_date = now()
-            self.mpesa_transaction_id = payment_doc.trans_id
             
-            # Let frappe-mpsa-payments handle payment entry
+            if payment_type == "M-Pesa":
+                self.mpesa_transaction_id = payment_reference
+            elif payment_type == "Invoice":
+                self.billing_invoice = payment_reference
+
             if self.status == "Draft":
                 self.status = "Active"
                 self.provision_mikrotik_user()
-                self.broadcast_status_update("active", "Payment received and service activated")
+                self.broadcast_status_update("active", f"Service activated after {payment_type} payment")
             elif self.status == "Suspended":
                 self.reactivate()
-                self.broadcast_status_update("reactivated", "Service reactivated after payment")
-                
+                self.broadcast_status_update("reactivated", f"Service reactivated after {payment_type} payment")
+
             self.save()
             return True
-            
+
         except Exception as e:
-            frappe.log_error(f"Error processing payment for subscription {self.name}: {str(e)}")
+            frappe.log_error(f"Error processing {payment_type} payment for subscription {self.name}: {str(e)}")
             return False
+
+    def on_payment_authorized(self, payment_doc):
+        """Called by frappe-mpsa-payments when payment is authorized"""
+        return self.handle_payment_success(payment_doc.trans_id, "M-Pesa")
 
     def broadcast_status_update(self, event_type, message):
         """Broadcast real-time status update"""
@@ -416,5 +423,29 @@ def sync_router_status():
         except Exception as e:
             frappe.log_error(f"Error syncing router status for {sub.name}: {str(e)}")
             frappe.db.rollback()
+
+@frappe.whitelist()
+def handle_invoice_submission(doc, method=None):
+    """Handle Sales Invoice submission to update subscription status"""
+    try:
+        # Check if invoice is linked to a subscription
+        subscription_id = frappe.db.get_value("Customer Subscription", 
+            {"billing_invoice": doc.name}, "name")
+            
+        if subscription_id:
+            subscription = frappe.get_doc("Customer Subscription", subscription_id)
+            
+            if doc.docstatus == 1:  # On Submit
+                if not subscription.handle_payment_success(doc.name, "Invoice"):
+                    frappe.throw(_("Failed to process subscription payment"))
+            elif doc.docstatus == 2:  # On Cancel
+                frappe.throw(_("Cannot cancel invoice linked to active subscription"))
+            
+    except Exception as e:
+        frappe.log_error(
+            f"Error processing Sales Invoice {doc.name} for subscription: {str(e)}",
+            "Invoice Processing Error"
+        )
+        raise
 
 
