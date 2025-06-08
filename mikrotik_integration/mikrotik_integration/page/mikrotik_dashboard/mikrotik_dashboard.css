@@ -1,0 +1,40 @@
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-md);
+    padding: 15px;
+    box-shadow: var(--card-shadow);
+}
+
+.stat-title {
+    font-size: var(--text-sm);
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.active-users-section,
+.api-logs-section,
+.usage-chart-section {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-md);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.datatable {
+    --dt-border-color: var(--border-color);
+    --dt-light-bg: var(--fg-color);
+    --dt-text-color: var(--text-color);
+    --dt-header-cell-bg: var(--fg-color);
+}

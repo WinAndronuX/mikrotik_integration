@@ -57,6 +57,11 @@ frappe.MikroTikDashboard = class MikroTikDashboard {
             '0',
             'orange'
         );
+        this.pending_payments_card = this.make_stat_card(
+            __('Pending Payments'),
+            '0',
+            'yellow'
+        );
     }
 
     make_stat_card(title, value, color) {
@@ -83,7 +88,9 @@ frappe.MikroTikDashboard = class MikroTikDashboard {
                     {name: 'username', width: 150},
                     {name: 'connection_type', width: 120},
                     {name: 'data_used', width: 120},
-                    {name: 'uptime', width: 120}
+                    {name: 'uptime', width: 120},
+                    {name: 'payment_status', width: 120},
+                    {name: 'expiry', width: 120}
                 ],
                 data: []
             }
@@ -168,6 +175,7 @@ frappe.MikroTikDashboard = class MikroTikDashboard {
         this.revenue_card.find('.stat-value').text(
             format_currency(data.stats.monthly_revenue, data.stats.currency)
         );
+        this.pending_payments_card.find('.stat-value').text(data.stats.pending_payments);
         
         // Update active users table
         this.active_users_table.refresh(data.active_users);
