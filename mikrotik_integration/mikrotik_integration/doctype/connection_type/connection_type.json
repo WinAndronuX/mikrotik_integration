@@ -1,0 +1,128 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-03 15:24:24.962765",
+ "description": "Manage Connection Types and Profiles",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_settings_section",
+  "connection_code",
+  "service_name",
+  "profile_name",
+  "cb_settings",
+  "parent_profile",
+  "description",
+  "bandwidth_section",
+  "speed_limit_rx",
+  "burst_limit_rx",
+  "cb_bandwidth",
+  "speed_limit_tx",
+  "burst_limit_tx"
+ ],
+ "fields": [
+  {
+   "fieldname": "basic_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Basic Settings"
+  },
+  {
+   "fieldname": "connection_code",
+   "fieldtype": "Data",
+   "label": "Connection Code",
+   "reqd": 1,
+   "unique": 1,
+   "description": "e.g., HOTSPOT, PPPOE, L2TP, OPENVPN"
+  },
+  {
+   "fieldname": "service_name",
+   "fieldtype": "Select",
+   "label": "Service Name",
+   "reqd": 1,
+   "options": "hotspot\npppoe\nl2tp\npptp\nopenvpn",
+   "description": "RouterOS service type"
+  },
+  {
+   "fieldname": "profile_name",
+   "fieldtype": "Data",
+   "label": "Profile Name",
+   "reqd": 1,
+   "description": "Exact profile name in RouterOS"
+  },
+  {
+   "fieldname": "cb_settings",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "parent_profile",
+   "fieldtype": "Link",
+   "label": "Parent Profile",
+   "options": "Connection Type",
+   "description": "Inherit settings from another profile"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "bandwidth_section",
+   "fieldtype": "Section Break",
+   "label": "Bandwidth Settings"
+  },
+  {
+   "fieldname": "speed_limit_rx",
+   "fieldtype": "Data",
+   "label": "Download Speed Limit",
+   "description": "e.g., 2M, 512k (leave empty to use parent profile)"
+  },
+  {
+   "fieldname": "burst_limit_rx",
+   "fieldtype": "Data",
+   "label": "Download Burst Limit",
+   "description": "e.g., 3M (leave empty to use parent profile)"
+  },
+  {
+   "fieldname": "cb_bandwidth",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "speed_limit_tx",
+   "fieldtype": "Data",
+   "label": "Upload Speed Limit",
+   "description": "e.g., 1M, 256k (leave empty to use parent profile)"
+  },
+  {
+   "fieldname": "burst_limit_tx",
+   "fieldtype": "Data",
+   "label": "Upload Burst Limit",
+   "description": "e.g., 2M (leave empty to use parent profile)"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-03 15:33:12.395413",
+ "modified_by": "Administrator",
+ "module": "Mikrotik Integration",
+ "name": "Connection Type",
+ "owner": "ronoelisha625@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

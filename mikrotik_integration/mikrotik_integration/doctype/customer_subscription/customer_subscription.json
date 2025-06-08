@@ -1,0 +1,294 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-03 15:27:30.842066",
+ "description": "Manage Customer Internet Subscriptions",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "is_submittable": 1,
+ "field_order": [
+  "customer_section",
+  "customer",
+  "customer_name",
+  "cb_customer",
+  "status",
+  "subscription_id",
+  "plan_section",
+  "internet_plan",
+  "connection_type",
+  "cb_plan",
+  "price",
+  "currency",
+  "payment_section",
+  "payment_method",
+  "phone_number",
+  "mpesa_transaction_id",
+  "cb_payment",
+  "payment_status",
+  "payment_date",
+  "mikrotik_section",
+  "mikrotik_settings",
+  "username_mikrotik",
+  "password_mikrotik",
+  "cb_mikrotik",
+  "data_used_mb",
+  "last_login",
+  "validity_section",
+  "start_date",
+  "expiry_date",
+  "cb_validity",
+  "billing_invoice",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_customer",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nActive\nExpired\nSuspended",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "subscription_id",
+   "fieldtype": "Data",
+   "label": "Subscription ID",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "plan_section",
+   "fieldtype": "Section Break",
+   "label": "Plan Details"
+  },
+  {
+   "fieldname": "internet_plan",
+   "fieldtype": "Link",
+   "label": "Internet Plan",
+   "options": "Internet Plan",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fetch_from": "internet_plan.connection_type",
+   "fieldname": "connection_type",
+   "fieldtype": "Link",
+   "label": "Connection Type",
+   "options": "Connection Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_plan",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "internet_plan.price",
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price",
+   "options": "currency",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "internet_plan.currency",
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "payment_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Information"
+  },
+  {
+   "default": "M-Pesa",
+   "fieldname": "payment_method",
+   "fieldtype": "Select",
+   "label": "Payment Method",
+   "options": "M-Pesa",
+   "reqd": 1
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "M-Pesa Phone Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mpesa_transaction_id",
+   "fieldtype": "Data",
+   "label": "M-Pesa Transaction ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_payment",
+   "fieldtype": "Column Break"  
+  },
+  {
+   "default": "Pending",
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "Pending\nCompleted\nFailed",
+   "reqd": 1
+  },
+  {
+   "fieldname": "payment_date",
+   "fieldtype": "Datetime",
+   "label": "Payment Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mikrotik_section",
+   "fieldtype": "Section Break",
+   "label": "MikroTik Details"
+  },
+  {
+   "fieldname": "mikrotik_settings",
+   "fieldtype": "Link",
+   "label": "MikroTik Router",
+   "options": "MikroTik Settings",
+   "reqd": 1
+  },
+  {
+   "fieldname": "username_mikrotik",
+   "fieldtype": "Data",
+   "label": "Username",
+   "unique": 1,
+   "description": "Username for router authentication"
+  },
+  {
+   "fieldname": "password_mikrotik",
+   "fieldtype": "Password",
+   "label": "Password",
+   "description": "Password for router authentication"
+  },
+  {
+   "fieldname": "cb_mikrotik",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "data_used_mb",
+   "fieldtype": "Int",
+   "label": "Data Used (MB)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_login",
+   "fieldtype": "Datetime",
+   "label": "Last Login",
+   "read_only": 1
+  },
+  {
+   "fieldname": "validity_section",
+   "fieldtype": "Section Break",
+   "label": "Validity & Billing"
+  },
+  {
+   "default": "Today",
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expiry Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_validity",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "billing_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "options": "Sales Invoice"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Customer Subscription",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-03 15:32:34.671365",
+ "modified_by": "Administrator",
+ "module": "Mikrotik Integration",
+ "name": "Customer Subscription",
+ "owner": "ronoelisha625@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "customer,customer_name,internet_plan,status",
+ "show_name_in_global_search": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "customer_name",
+ "track_changes": 1
+}

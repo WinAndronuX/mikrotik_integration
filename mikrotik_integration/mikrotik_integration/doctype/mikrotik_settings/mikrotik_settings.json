@@ -1,0 +1,149 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-03 15:22:19.919087",
+ "description": "Configure MikroTik Router Connections",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "mikrotik_configuration_section",
+  "router_name",
+  "api_host",
+  "api_port",
+  "cb_credentials",
+  "username",
+  "password",
+  "use_ssl",
+  "default_profiles_section",
+  "default_profile_hotspot",
+  "default_profile_pppoe",
+  "default_profile_l2tp",
+  "default_profile_openvpn",
+  "status_section",
+  "last_sync"
+ ],
+ "fields": [
+  {
+   "fieldname": "mikrotik_configuration_section",
+   "fieldtype": "Section Break",
+   "label": "MikroTik Configuration"
+  },
+  {
+   "fieldname": "router_name",
+   "fieldtype": "Data",
+   "label": "Router Name",
+   "unique": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "api_host",
+   "fieldtype": "Data",
+   "label": "API Host",
+   "reqd": 1,
+   "description": "IP address or hostname of the RouterOS"
+  },
+  {
+   "fieldname": "api_port",
+   "fieldtype": "Int",
+   "label": "API Port",
+   "default": 8728,
+   "reqd": 1,
+   "description": "MikroTik API port (default: 8728)"
+  },
+  {
+   "fieldname": "cb_credentials",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "username",
+   "fieldtype": "Data",
+   "label": "Username",
+   "reqd": 1,
+   "description": "Router admin username"
+  },
+  {
+   "fieldname": "password",
+   "fieldtype": "Password",
+   "label": "Password",
+   "reqd": 1,
+   "description": "Router admin password"
+  },
+  {
+   "fieldname": "use_ssl",
+   "fieldtype": "Check",
+   "label": "Use SSL",
+   "description": "Use HTTPS for RouterOS ≥7"
+  },
+  {
+   "fieldname": "default_profiles_section",
+   "fieldtype": "Section Break",
+   "label": "Default Profiles"
+  },
+  {
+   "fieldname": "default_profile_hotspot",
+   "fieldtype": "Link",
+   "label": "Default Hotspot Profile",
+   "options": "Connection Type",
+   "description": "Default profile for Hotspot connections"
+  },
+  {
+   "fieldname": "default_profile_pppoe",
+   "fieldtype": "Link",
+   "label": "Default PPPoE Profile",
+   "options": "Connection Type",
+   "description": "Default profile for PPPoE connections"
+  },
+  {
+   "fieldname": "default_profile_l2tp",
+   "fieldtype": "Link",
+   "label": "Default L2TP Profile",
+   "options": "Connection Type",
+   "description": "Default profile for L2TP connections"
+  },
+  {
+   "fieldname": "default_profile_openvpn",
+   "fieldtype": "Link",
+   "label": "Default OpenVPN Profile",
+   "options": "Connection Type",
+   "description": "Default profile for OpenVPN connections"
+  },
+  {
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Status"
+  },
+  {
+   "fieldname": "last_sync",
+   "fieldtype": "Datetime",
+   "label": "Last Sync",
+   "read_only": 1,
+   "description": "Last time ERPNext fetched usage data"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-03 15:38:19.430014",
+ "modified_by": "Administrator",
+ "module": "Mikrotik Integration",
+ "name": "MikroTik Settings",
+ "owner": "ronoelisha625@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
