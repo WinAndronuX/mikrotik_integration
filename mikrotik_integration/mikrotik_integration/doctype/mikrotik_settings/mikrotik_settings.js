@@ -3,18 +3,37 @@
 
 frappe.ui.form.on('MikroTik Settings', {
     refresh(frm) {
-        frm.add_custom_button(__('Test Connection'), function() {
+        // Update status indicator
+        frappe.call({
+            method: 'check_connection_status',
+            doc: frm.doc,
+            callback: function(r) {
+                if (r.message) {
+                    frm.page.set_indicator('Connected', 'green');
+                } else {
+                    frm.page.set_indicator('Disconnected', 'red');
+                }
+            }
+        });
+
+        frm.add_custom_button(__('Check Connection'), function() {
             frappe.call({
-                method: 'test_connection',
+                method: 'check_connection_status',
                 doc: frm.doc,
                 freeze: true,
-                freeze_message: __('Testing connection to MikroTik router...'),
+                freeze_message: __('Pinging router...'),
                 callback: function(r) {
-                    if (r.exc) {
+                    if (r.message) {
                         frappe.msgprint({
-                            title: __('Connection Failed'),
+                            title: __('Connection Status'),
+                            indicator: 'green',
+                            message: __('Router is connected and responding')
+                        });
+                    } else {
+                        frappe.msgprint({
+                            title: __('Connection Status'),
                             indicator: 'red',
-                            message: __('Could not connect to MikroTik router. Please check your settings.')
+                            message: __('Router is not responding')
                         });
                     }
                 }
@@ -23,17 +42,13 @@ frappe.ui.form.on('MikroTik Settings', {
     },
     
     api_host: function(frm) {
-        frm.toggle_reqd(['api_port', 'username', 'password'], frm.doc.api_host);
+        // Remove toggle_reqd since fields are now optional
     },
     
     validate: function(frm) {
-        // Ensure required fields are filled when router settings are provided
-        if (frm.doc.api_host) {
-            ['api_port', 'username', 'password'].forEach(field => {
-                if (!frm.doc[field]) {
-                    frappe.throw(__(`${frappe.meta.get_label(frm.doctype, field, frm.doc.name)} is required`));
-                }
-            });
+        // Only host is required
+        if (!frm.doc.api_host) {
+            frappe.throw(__('Router Host/IP is required'));
         }
     }
 });

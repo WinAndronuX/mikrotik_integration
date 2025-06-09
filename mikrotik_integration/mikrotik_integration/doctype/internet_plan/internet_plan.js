@@ -47,16 +47,6 @@ frappe.ui.form.on('Internet Plan', {
         }, __('Actions'));
     },
 
-    setup(frm) {
-        // Set query for Connection Type to only show active profiles
-        frm.set_query('connection_type', function() {
-            return {
-                filters: {
-                    'is_active': 1
-                }
-            };
-        });
-    },
 
     validate(frm) {
         // Validate basic requirements

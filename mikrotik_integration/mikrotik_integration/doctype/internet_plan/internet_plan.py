@@ -45,38 +45,39 @@ class InternetPlan(Document):
         markup_multiplier = 1 + (flt(self.reseller_markup) / 100)
         return flt(self.price * markup_multiplier, 2)
 
-    def after_insert(self):
-        """After inserting a new plan"""
-        self.create_pricing_rule()
+    # def after_insert(self):
+    #     """After inserting a new plan"""
+    #     self.create_pricing_rule()
 
-    def create_pricing_rule(self):
-        """Create a Pricing Rule for this plan if it doesn't exist"""
-        if not frappe.db.exists("Pricing Rule", {"internet_plan": self.name}):
-            pricing_rule = frappe.get_doc({
-                "doctype": "Pricing Rule",
-                "title": f"Pricing Rule for {self.plan_name}",
-                "apply_on": "Item",
-                "internet_plan": self.name,
-                "selling": 1,
-                "rate": self.price,
-                "currency": self.currency,
-                "valid_from": frappe.utils.nowdate(),
-                "company": frappe.defaults.get_defaults().company
-            })
-            pricing_rule.insert(ignore_permissions=True)
+    # def create_pricing_rule(self):
+    #     """Create a Pricing Rule for this plan if it doesn't exist"""
+    #     if not frappe.db.exists("Pricing Rule", {"internet_plan": self.name}):
+    #         pass
+            # pricing_rule = frappe.get_doc({
+            #     "doctype": "Pricing Rule",
+            #     "title": f"Pricing Rule for {self.plan_name}",
+            #     "apply_on": "Item Code",
+            #     "internet_plan": self.name,
+            #     "selling": 1,
+            #     "rate": self.price,
+            #     "currency": self.currency,
+            #     "valid_from": frappe.utils.nowdate(),
+            #     "company": frappe.defaults.get_defaults().company
+            # })
+            # pricing_rule.insert(ignore_permissions=True)
 
-    def on_update(self):
-        """Update related pricing rules when plan is updated"""
-        pricing_rules = frappe.get_all(
-            "Pricing Rule",
-            filters={"internet_plan": self.name}
-        )
+    # def on_update(self):
+    #     """Update related pricing rules when plan is updated"""
+    #     pricing_rules = frappe.get_all(
+    #         "Pricing Rule",
+    #         filters={"internet_plan": self.name}
+    #     )
         
-        for rule in pricing_rules:
-            pr = frappe.get_doc("Pricing Rule", rule.name)
-            pr.rate = self.price
-            pr.currency = self.currency
-            pr.save(ignore_permissions=True)
+    #     for rule in pricing_rules:
+    #         pr = frappe.get_doc("Pricing Rule", rule.name)
+    #         pr.rate = self.price
+    #         pr.currency = self.currency
+    #         pr.save(ignore_permissions=True)
 
     def before_save(self):
         """Set title field"""

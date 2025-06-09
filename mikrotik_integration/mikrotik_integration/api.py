@@ -24,10 +24,12 @@ class MikrotikAPI:
                 user = api.get_resource('/interface/ovpn-server/user/').get(name=username)
                 active = api.get_resource('/interface/ovpn-server/active/').get(name=username)
             else:
-                frappe.throw(_("Unsupported connection type: {0}").format(conn_type.service_name))
+                error_msg = _("Unsupported connection type: {0}").format(conn_type.service_name)
+                self.log_api_error(api.host, "get_usage", {"username": username}, error_msg)
+                frappe.throw(error_msg)
                 
             if user and len(user) > 0:
-                # Get bytes in/out
+                # Get bytes in/out 
                 bytes_in = float(user[0].get('bytes-in', '0'))
                 bytes_out = float(user[0].get('bytes-out', '0'))
                 usage_data["data_used_mb"] = (bytes_in + bytes_out) / (1024 * 1024)  # Convert to MB
@@ -39,9 +41,11 @@ class MikrotikAPI:
             return usage_data
             
         except Exception as e:
-            frappe.log_error(
-                f"Error getting usage data for user {username}: {str(e)}",
-                "MikroTik API Error"
+            self.log_api_error(
+                api.host,
+                "get_usage",
+                {"username": username, "connection_type": conn_type.service_name},
+                str(e)
             )
             return None
 
@@ -55,35 +59,36 @@ class MikrotikAPI:
             elif conn_type.service_name == "openvpn":
                 users = api.get_resource('/interface/ovpn-server/user/').get(name=username)
             else:
-                frappe.throw(_("Unsupported connection type: {0}").format(conn_type.service_name))
+                error_msg = _("Unsupported connection type: {0}").format(conn_type.service_name)
+                self.log_api_error(api.host, "check_user_status", {"username": username}, error_msg)
+                frappe.throw(error_msg)
                 
             if users and len(users) > 0:
                 return "Active" if not users[0].get('disabled', 'false') == 'true' else "Suspended"
             return "Not Found"
             
         except Exception as e:
-            frappe.log_error(
-                f"Error checking status for user {username}: {str(e)}",
-                "MikroTik API Error"
+            self.log_api_error(
+                api.host,
+                "check_user_status",
+                {"username": username, "connection_type": conn_type.service_name},
+                str(e)
             )
             return "Error"
 
-    def create_api_log(self, router, operation, parameters, status, response=""):
-        """Create MikroTik API Log entry"""
-        try:
-            log = frappe.get_doc({
-                "doctype": "MikroTik API Log",
-                "router": router,
-                "operation": operation,
-                "parameters": parameters,
-                "response": response,
-                "status": status
-            })
-            log.insert(ignore_permissions=True)
-            return log
-        except Exception as e:
-            frappe.log_error(f"Error creating API log: {str(e)}")
-            return None
+    def log_api_error(self, router, operation, parameters, error=""):
+        """Log MikroTik API errors to Frappe error log"""
+        error_log = frappe.log_error(
+            message=f"MikroTik API Error\nRouter: {router}\nOperation: {operation}\nParameters: {parameters}\nError: {error}",
+            title="MikroTik API Error"
+        )
+        frappe.publish_realtime('mikrotik_api_error', {
+            'name': error_log.name,
+            'creation': error_log.creation,
+            'operation': operation,
+            'router': router
+        })
+
 
 @frappe.whitelist()
 def get_dashboard_data(router=None):
@@ -182,26 +187,46 @@ def get_active_users(router=None):
     return users
 
 def get_failed_api_calls(router=None):
-    """Get recent failed API calls"""
+    """Get recent failed API calls from error log"""
     filters = {
-        "status": "Failed",
-        "creation": [">=", add_days(now(), -1)]  # Last 24 hours
+        "creation": [">=", add_days(now(), -1)],  # Last 24 hours
+        "title": ["like", "MikroTik API Error%"]
     }
-    if router:
-        filters["router"] = router
 
-    return frappe.get_all(
-        "MikroTik API Log",
+    # Search in error log for MikroTik API errors
+    logs = frappe.get_all(
+        "Error Log",
         filters=filters,
-        fields=[
-            "creation as timestamp",
-            "operation",
-            "router",
-            "status"
-        ],
+        fields=["creation as timestamp", "message"],
         order_by="creation desc",
         limit=10
     )
+
+    # Parse the logs to extract operation and router
+    formatted_logs = []
+    for log in logs:
+        error_lines = log.message.split("\n")
+        router_name = ""
+        operation = ""
+        
+        for line in error_lines:
+            if line.startswith("Router:"):
+                router_name = line.replace("Router:", "").strip()
+            elif line.startswith("Operation:"):
+                operation = line.replace("Operation:", "").strip()
+
+        # Only include if we have both router and operation
+        if router_name and operation:
+            # Include if no specific router filter or matches filter
+            if not router or router_name == router:  
+                formatted_logs.append({
+                    "timestamp": log.timestamp,
+                    "operation": operation,
+                    "router": router_name,
+                    "status": "Failed"
+                })
+
+    return formatted_logs
 
 def get_usage_chart_data(router=None):
     """Get daily bandwidth usage data"""

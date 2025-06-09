@@ -14,6 +14,7 @@
   "username",
   "password",
   "use_ssl",
+  "disabled",
   "default_profiles_section",
   "default_profile_hotspot",
   "default_profile_pppoe",
@@ -31,48 +32,55 @@
   {
    "fieldname": "router_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Router Name",
-   "unique": 1,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "IP address or hostname of the RouterOS",
+   "fieldname": "api_host",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "API Host",
    "reqd": 1
   },
   {
-   "fieldname": "api_host",
-   "fieldtype": "Data",
-   "label": "API Host",
-   "reqd": 1,
-   "description": "IP address or hostname of the RouterOS"
-  },
-  {
+   "default": "8728",
+   "description": "MikroTik API port (default: 8728)",
    "fieldname": "api_port",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "API Port",
-   "default": 8728,
-   "reqd": 1,
-   "description": "MikroTik API port (default: 8728)"
+   "reqd": 1
   },
   {
    "fieldname": "cb_credentials",
    "fieldtype": "Column Break"
   },
   {
+   "description": "Router admin username",
    "fieldname": "username",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Username",
-   "reqd": 1,
-   "description": "Router admin username"
+   "reqd": 1
   },
   {
+   "description": "Router admin password",
    "fieldname": "password",
    "fieldtype": "Password",
-   "label": "Password",
-   "reqd": 1,
-   "description": "Router admin password"
+   "label": "Password"
   },
   {
+   "default": "0",
+   "description": "Use HTTPS for RouterOS \u22657",
    "fieldname": "use_ssl",
    "fieldtype": "Check",
-   "label": "Use SSL",
-   "description": "Use HTTPS for RouterOS ≥7"
+   "label": "Use SSL"
   },
   {
    "fieldname": "default_profiles_section",
@@ -80,32 +88,32 @@
    "label": "Default Profiles"
   },
   {
+   "description": "Default profile for Hotspot connections",
    "fieldname": "default_profile_hotspot",
    "fieldtype": "Link",
    "label": "Default Hotspot Profile",
-   "options": "Connection Type",
-   "description": "Default profile for Hotspot connections"
+   "options": "Connection Type"
   },
   {
+   "description": "Default profile for PPPoE connections",
    "fieldname": "default_profile_pppoe",
    "fieldtype": "Link",
    "label": "Default PPPoE Profile",
-   "options": "Connection Type",
-   "description": "Default profile for PPPoE connections"
+   "options": "Connection Type"
   },
   {
+   "description": "Default profile for L2TP connections",
    "fieldname": "default_profile_l2tp",
    "fieldtype": "Link",
    "label": "Default L2TP Profile",
-   "options": "Connection Type",
-   "description": "Default profile for L2TP connections"
+   "options": "Connection Type"
   },
   {
+   "description": "Default profile for OpenVPN connections",
    "fieldname": "default_profile_openvpn",
    "fieldtype": "Link",
    "label": "Default OpenVPN Profile",
-   "options": "Connection Type",
-   "description": "Default profile for OpenVPN connections"
+   "options": "Connection Type"
   },
   {
    "fieldname": "status_section",
@@ -113,17 +121,23 @@
    "label": "Status"
   },
   {
+   "description": "Last time ERPNext fetched usage data",
    "fieldname": "last_sync",
    "fieldtype": "Datetime",
    "label": "Last Sync",
-   "read_only": 1,
-   "description": "Last time ERPNext fetched usage data"
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-03 15:38:19.430014",
+ "modified": "2025-06-09 10:27:05.318541",
  "modified_by": "Administrator",
  "module": "Mikrotik Integration",
  "name": "MikroTik Settings",
