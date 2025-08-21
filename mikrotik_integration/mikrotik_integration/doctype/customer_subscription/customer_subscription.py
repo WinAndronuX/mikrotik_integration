@@ -42,10 +42,10 @@ def validate(doc):
     doc.validate_customer()
     doc.set_subscription_id()
     doc.set_credentials()
-        """Validate and set dates"""
-        if not self.expiry_date:
-            plan = frappe.get_doc("Internet Plan", self.internet_plan)
-            self.expiry_date = add_days(self.start_date, plan.validity_days)
+    """Validate and set dates"""
+    if not self.expiry_date:
+        plan = frappe.get_doc("Internet Plan", self.internet_plan)
+        self.expiry_date = add_days(self.start_date, plan.validity_days)
 
     def validate_customer(self):
         """Ensure customer exists and is active"""
