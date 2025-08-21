@@ -16,7 +16,7 @@ app_include_js = [
 # --------
 doc_events = {
     "Customer Subscription": {
-        "before_insert": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.validate",
+        "validate": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.CustomerSubscription.validate",
         "on_submit": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.on_submit",
         "before_cancel": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.before_cancel"
     },

@@ -84,7 +84,7 @@ frappe.ui.form.on('Customer Subscription', {
         if (frm.doc.docstatus === 0) {
             frm.add_custom_button(__('Test Provision'), function() {
                 frappe.call({
-                    method: 'mikrotik_integration.api.test_provision',
+                    method: 'mikrotik_integration.mikrotik_integration.api.test_provision',
                     args: {
                         subscription: frm.doc.name
                     },
