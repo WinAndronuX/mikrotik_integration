@@ -82,17 +82,8 @@ frappe.ui.form.on('Customer Subscription', {
 
         // Add provision button in draft
         if (frm.doc.docstatus === 0) {
-            frm.add_custom_button(__('Test Provision'), function() {
-                // Validate required fields
-                if (!frm.doc.mikrotik_settings || !frm.doc.connection_type) {
-                    frappe.msgprint({
-                        title: __('Missing Information'),
-                        indicator: 'red',
-                        message: __('Please fill in MikroTik Settings and Connection Type first')
-                    });
-                    return;
-                }
-
+            // Function to make the test provision API call
+            function test_provision_call(frm) {
                 frappe.call({
                     method: 'mikrotik_integration.mikrotik_integration.api.test_provision',
                     args: {
@@ -116,6 +107,30 @@ frappe.ui.form.on('Customer Subscription', {
                         }
                     }
                 });
+            }
+
+            frm.add_custom_button(__('Test Provision'), function() {
+                // Validate required fields
+                if (!frm.doc.mikrotik_settings || !frm.doc.connection_type) {
+                    frappe.msgprint({
+                        title: __('Missing Information'),
+                        indicator: 'red',
+                        message: __('Please fill in MikroTik Settings and Connection Type first')
+                    });
+                    return;
+                }
+
+                // Save the form first if it's new
+                if (frm.is_new()) {
+                    frm.save('Save', () => {
+                        // After saving, make the API call
+                        test_provision_call(frm);
+                    }, 'Save', true);
+                    return;
+                }
+
+                // If not new, make the API call directly
+                test_provision_call(frm);
             });
         }
     },
