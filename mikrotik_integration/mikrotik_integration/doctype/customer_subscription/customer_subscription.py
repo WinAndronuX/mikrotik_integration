@@ -36,37 +36,12 @@ class CustomerSubscription(Document):
         if not self.password_mikrotik:
             self.password_mikrotik = random_string(10)
 
-def validate(doc):
+def validate(doc, method=None):
     """Validate subscription details"""
     doc.validate_dates()
     doc.validate_customer()
     doc.set_subscription_id()
     doc.set_credentials()
-    """Validate and set dates"""
-    if not self.expiry_date:
-        plan = frappe.get_doc("Internet Plan", self.internet_plan)
-        self.expiry_date = add_days(self.start_date, plan.validity_days)
-
-    def validate_customer(self):
-        """Ensure customer exists and is active"""
-        customer = frappe.get_doc("Customer", self.customer)
-        if customer.disabled:
-            frappe.throw(_("Customer {0} is disabled").format(self.customer))
-
-    def set_subscription_id(self):
-        """Generate unique subscription ID if not set"""
-        if not self.subscription_id:
-            self.subscription_id = f"SUB-{frappe.generate_hash(length=8)}"
-
-    def set_credentials(self):
-        """Set MikroTik username and password if not set"""
-        if not self.username_mikrotik:
-            # Generate username based on customer name and subscription ID
-            username = f"{self.customer_name.lower().replace(' ', '')}-{self.subscription_id[-4:]}"
-            self.username_mikrotik = username[:32]  # MikroTik username length limit
-        
-        if not self.password_mikrotik:
-            self.password_mikrotik = random_string(10)
 
     def before_submit(self):
         """Before activating subscription"""
