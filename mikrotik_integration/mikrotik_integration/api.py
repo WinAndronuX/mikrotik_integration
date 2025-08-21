@@ -228,6 +228,87 @@ def get_failed_api_calls(router=None):
 
     return formatted_logs
 
+@frappe.whitelist()
+def test_provision(router, connection_type, username, password):
+    """Test user provisioning on MikroTik router"""
+    try:
+        router_doc = frappe.get_doc("MikroTik Settings", router)
+        conn_type = frappe.get_doc("Connection Type", connection_type)
+        
+        # Get API connection
+        api = router_doc.get_api_connection()
+        
+        # Prepare command based on connection type
+        if conn_type.service_name == "hotspot":
+            cmd = "/ip hotspot user add"
+        elif conn_type.service_name in ["pppoe", "l2tp", "pptp"]:
+            cmd = "/ppp secret add"
+        elif conn_type.service_name == "openvpn":
+            cmd = "/interface ovpn-server user add"
+        else:
+            return {
+                "success": False,
+                "message": f"Unsupported connection type: {conn_type.service_name}"
+            }
+
+        # Get bandwidth limits
+        limits = conn_type.get_bandwidth_limits()
+        
+        # Build parameters
+        params = {
+            "name": username,
+            "password": password,
+            "profile": conn_type.profile_name
+        }
+        
+        if conn_type.service_name in ["pppoe", "l2tp", "pptp"]:
+            params["service"] = conn_type.service_name
+        
+        # Apply bandwidth limits if not using profile
+        if not conn_type.parent_profile:
+            if limits.get("speed_limit_rx"):
+                params["rate-limit"] = f"{limits['speed_limit_rx']}/{limits['speed_limit_tx']}"
+            if limits.get("burst_limit_rx"):
+                params["burst-limit"] = f"{limits['burst_limit_rx']}/{limits['burst_limit_tx']}"
+
+        # Execute command
+        api.get_resource(cmd).add(**params)
+        
+        # Test if user was created
+        if conn_type.service_name == "hotspot":
+            users = api.get_resource('/ip/hotspot/user/').get(name=username)
+        elif conn_type.service_name in ["pppoe", "l2tp", "pptp"]:
+            users = api.get_resource('/ppp/secret/').get(name=username)
+        elif conn_type.service_name == "openvpn":
+            users = api.get_resource('/interface/ovpn-server/user/').get(name=username)
+            
+        api.close()
+        
+        if users and len(users) > 0:
+            # Clean up test user
+            if conn_type.service_name == "hotspot":
+                api.get_resource('/ip/hotspot/user/remove').remove(id=users[0].get('id'))
+            elif conn_type.service_name in ["pppoe", "l2tp", "pptp"]:
+                api.get_resource('/ppp/secret/remove').remove(id=users[0].get('id'))
+            elif conn_type.service_name == "openvpn":
+                api.get_resource('/interface/ovpn-server/user/remove').remove(id=users[0].get('id'))
+                
+            return {
+                "success": True,
+                "message": "Test provision successful"
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Failed to create test user"
+            }
+            
+    except Exception as e:
+        return {
+            "success": False,
+            "message": str(e)
+        }
+
 def get_usage_chart_data(router=None):
     """Get daily bandwidth usage data"""
     filters = {

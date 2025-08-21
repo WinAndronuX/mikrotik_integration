@@ -25,7 +25,7 @@ class CustomerSubscription(Document):
     def validate_customer(self):
         """Ensure customer exists and is active"""
         customer = frappe.get_doc("Customer", self.customer)
-        if not customer.disabled:
+        if customer.disabled:
             frappe.throw(_("Customer {0} is disabled").format(self.customer))
 
     def set_subscription_id(self):
