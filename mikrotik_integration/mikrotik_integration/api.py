@@ -229,11 +229,21 @@ def get_failed_api_calls(router=None):
     return formatted_logs
 
 @frappe.whitelist()
-def test_provision(router, connection_type, username, password):
+def test_provision(subscription):
     """Test user provisioning on MikroTik router"""
     try:
-        router_doc = frappe.get_doc("MikroTik Settings", router)
-        conn_type = frappe.get_doc("Connection Type", connection_type)
+        # Get subscription document
+        sub = frappe.get_doc("Customer Subscription", subscription)
+        if not sub.mikrotik_settings or not sub.connection_type:
+            frappe.throw("Please fill in MikroTik Settings and Connection Type first")
+
+        # Get required documents
+        router_doc = frappe.get_doc("MikroTik Settings", sub.mikrotik_settings)
+        conn_type = frappe.get_doc("Connection Type", sub.connection_type)
+        
+        # Generate test credentials if not set
+        username = sub.username_mikrotik or f"test-{frappe.generate_hash(length=8)}"
+        password = sub.password_mikrotik or frappe.generate_hash(length=10)
         
         # Get API connection
         api = router_doc.get_api_connection()

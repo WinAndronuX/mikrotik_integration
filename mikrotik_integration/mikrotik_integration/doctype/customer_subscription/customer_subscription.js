@@ -83,6 +83,16 @@ frappe.ui.form.on('Customer Subscription', {
         // Add provision button in draft
         if (frm.doc.docstatus === 0) {
             frm.add_custom_button(__('Test Provision'), function() {
+                // Validate required fields
+                if (!frm.doc.mikrotik_settings || !frm.doc.connection_type) {
+                    frappe.msgprint({
+                        title: __('Missing Information'),
+                        indicator: 'red',
+                        message: __('Please fill in MikroTik Settings and Connection Type first')
+                    });
+                    return;
+                }
+
                 frappe.call({
                     method: 'mikrotik_integration.mikrotik_integration.api.test_provision',
                     args: {
@@ -91,11 +101,17 @@ frappe.ui.form.on('Customer Subscription', {
                     freeze: true,
                     freeze_message: __('Testing MikroTik Connection...'),
                     callback: function(r) {
-                        if (r.message) {
+                        if (r.message && r.message.success) {
                             frappe.msgprint({
                                 title: __('Test Successful'),
                                 indicator: 'green',
-                                message: __('Connection test successful. User can be provisioned.')
+                                message: r.message.message || __('Connection test successful. User can be provisioned.')
+                            });
+                        } else if (r.message) {
+                            frappe.msgprint({
+                                title: __('Test Failed'),
+                                indicator: 'red',
+                                message: r.message.message || __('Connection test failed.')
                             });
                         }
                     }
