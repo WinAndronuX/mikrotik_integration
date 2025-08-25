@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 from frappe import _
 import socket
-from routeros_api import RouterOsApi
+import routeros_api
 
 class MikroTikSettings(Document):
     def validate(self):
@@ -20,18 +20,21 @@ class MikroTikSettings(Document):
             username = self.api_username
             password = self.get_password('api_password')
             
-            # Create API connection
-            connection = RouterOsApi({
-                'host': host,
-                'username': username,
-                'password': password,
-                'port': port,
-                'plaintext_login': True
-            })
+            # Create API connection pool
+            connection = routeros_api.RouterOsApiPool(
+                host=host,
+                username=username,
+                password=password,
+                port=port,
+                plaintext_login=True
+            )
+            
+            # Get API connection
+            api = connection.get_api()
             
             # Test connection
-            connection.get_resource('/system/resource').get()
-            return connection
+            api.get_resource('/system/resource').get()
+            return api
             
         except Exception as e:
             frappe.throw(_('Could not establish connection to router: {0}').format(str(e)))
