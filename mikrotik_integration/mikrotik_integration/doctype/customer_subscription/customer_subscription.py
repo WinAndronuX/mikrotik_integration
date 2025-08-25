@@ -448,4 +448,15 @@ def handle_invoice_submission(doc, method=None):
         )
         raise
 
+def validate(doc, method=None):
+    """Validate subscription details"""
+    doc.validate()
+
+def on_submit(doc, method=None):
+    """When subscription is activated"""
+    doc.on_submit()
+
+def before_cancel(doc, method=None):
+    """Before cancelling subscription"""
+    doc.before_cancel()
 
