@@ -18,7 +18,11 @@ class MikroTikSettings(Document):
             host = self.api_host.strip()
             port = self.api_port or 8728  # Default API port
             username = self.username
-            password = self.get_password('password')
+            # Get the raw password value instead of the hashed version
+            password = self.password
+            
+            # Log connection attempt (without password)
+            frappe.logger().debug(f"Attempting MikroTik connection to {host}:{port} with user {username}")
             
             # Create API connection pool
             connection = routeros_api.RouterOsApiPool(
@@ -26,7 +30,7 @@ class MikroTikSettings(Document):
                 username=username,
                 password=password,
                 port=port,
-                plaintext_login=True
+                plaintext_login=not self.use_ssl  # Use encrypted login if SSL is enabled
             )
             
             # Get API connection
