@@ -37,7 +37,15 @@ class MikroTikSettings(Document):
             return api
             
         except Exception as e:
-            frappe.throw(_('Could not establish connection to router: {0}').format(str(e)))
+            error_msg = str(e)
+            if "authentication failed" in error_msg.lower():
+                frappe.throw(_('Authentication failed. Please check the router username and password.'))
+            elif "connection refused" in error_msg.lower():
+                frappe.throw(_('Connection refused. Please check if the router is accessible and the API port is correct.'))
+            elif "network unreachable" in error_msg.lower():
+                frappe.throw(_('Network unreachable. Please check if the router IP/hostname is correct.'))
+            else:
+                frappe.throw(_('Could not establish connection to router: {0}').format(error_msg))
 
     def validate_connection(self):
         """Test connection to MikroTik router"""

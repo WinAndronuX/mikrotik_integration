@@ -110,11 +110,17 @@ class CustomerSubscription(Document):
             api.close()
             
         except Exception as e:
-            # Log failure
+            # Log failure with proper JSON
+            error_details = {
+                "error": str(e),
+                "subscription": self.name,
+                "username": self.username_mikrotik,
+                "connection_type": conn_type.service_name
+            }
             self.create_api_log(
                 router=self.mikrotik_settings,
                 operation="add_user_failed",
-                parameters=str(e),
+                parameters=json.dumps(error_details),
                 status="Failed"
             )
             frappe.throw(_("Failed to provision MikroTik user: {0}").format(str(e)))

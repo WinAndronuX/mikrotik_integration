@@ -27,10 +27,10 @@ class MikroTikAPILog(Document):
                     else:
                         # If it's already a dict/list, convert to JSON string
                         self.set(field, json.dumps(value, indent=2))
-                except ValueError:
-                    frappe.throw(_("{0} must be valid JSON").format(
-                        frappe.meta.get_label(self.doctype, field)
-                    ))
+                except (ValueError, json.JSONDecodeError):
+                    meta = frappe.get_meta(self.doctype)
+                    field_label = meta.get_field(field).label if meta else field
+                    frappe.throw(_("{0} must be valid JSON").format(field_label))
 
     @staticmethod
     def clear_old_logs(days=30):
