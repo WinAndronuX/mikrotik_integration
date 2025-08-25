@@ -17,8 +17,8 @@ class MikroTikSettings(Document):
         try:
             host = self.api_host.strip()
             port = self.api_port or 8728  # Default API port
-            username = self.api_username
-            password = self.get_password('api_password')
+            username = self.username
+            password = self.get_password('password')
             
             # Create API connection pool
             connection = routeros_api.RouterOsApiPool(
