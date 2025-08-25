@@ -38,8 +38,15 @@ class MikroTikSettings(Document):
             
         except Exception as e:
             error_msg = str(e)
-            if "authentication failed" in error_msg.lower():
-                frappe.throw(_('Authentication failed. Please check the router username and password.'))
+            if isinstance(e, routeros_api.exceptions.RouterOsApiConnectionClosedError):
+                frappe.throw(_('Connection was closed by the router. Please check if the API service is enabled and the port is correct.'))
+            elif isinstance(e, routeros_api.exceptions.RouterOsApiConnectionError):
+                frappe.throw(_('Could not connect to router. Please check if the router is accessible and the IP/port are correct.'))
+            elif isinstance(e, routeros_api.exceptions.RouterOsApiCommunicationError):
+                if "authentication failed" in error_msg.lower():
+                    frappe.throw(_('Authentication failed. Please check the router username and password.'))
+                else:
+                    frappe.throw(_('Communication error with router. Please check your connection settings.'))
             elif "connection refused" in error_msg.lower():
                 frappe.throw(_('Connection refused. Please check if the router is accessible and the API port is correct.'))
             elif "network unreachable" in error_msg.lower():
