@@ -16,9 +16,9 @@ app_include_js = [
 # --------
 doc_events = {
     "Customer Subscription": {
-        "validate": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.validate",
-        "on_submit": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.on_submit",
-        "before_cancel": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.before_cancel"
+        "validate": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.CustomerSubscription.validate",
+        "on_submit": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.CustomerSubscription.on_submit",
+        "before_cancel": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.CustomerSubscription.before_cancel"
     },
     "Sales Invoice": {
         "on_submit": "mikrotik_integration.mikrotik_integration.doctype.customer_subscription.customer_subscription.handle_invoice_submission"
