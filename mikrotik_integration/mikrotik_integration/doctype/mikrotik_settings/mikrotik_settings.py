@@ -5,6 +5,7 @@ import frappe
 from frappe.model.document import Document
 from frappe import _
 import socket
+from routeros_api import RouterOsApi
 
 class MikroTikSettings(Document):
     def validate(self):
@@ -16,15 +17,21 @@ class MikroTikSettings(Document):
         try:
             host = self.api_host.strip()
             port = self.api_port or 8728  # Default API port
+            username = self.api_username
+            password = self.get_password('api_password')
             
-            # Create socket with longer timeout
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(5)  # 5 second timeout
+            # Create API connection
+            connection = RouterOsApi({
+                'host': host,
+                'username': username,
+                'password': password,
+                'port': port,
+                'plaintext_login': True
+            })
             
-            # Connect directly without SSL
-            sock.connect((host, port))
-            sock.close()
-            return True
+            # Test connection
+            connection.get_resource('/system/resource').get()
+            return connection
             
         except Exception as e:
             frappe.throw(_('Could not establish connection to router: {0}').format(str(e)))
@@ -32,8 +39,13 @@ class MikroTikSettings(Document):
     def validate_connection(self):
         """Test connection to MikroTik router"""
         try:
-            if self.get_api_connection():
-                frappe.msgprint(_('Successfully connected to MikroTik router'))
+            api = self.get_api_connection()
+            if api:
+                # Get system resource info as a connection test
+                resources = api.get_resource('/system/resource').get()
+                if resources:
+                    frappe.msgprint(_('Successfully connected to MikroTik router'))
+                api.close()
         except Exception as e:
             frappe.throw(_('Failed to connect to MikroTik router: {0}').format(str(e)))
 

@@ -36,12 +36,12 @@ class CustomerSubscription(Document):
         if not self.password_mikrotik:
             self.password_mikrotik = random_string(10)
 
-def validate(doc, method=None):
-    """Validate subscription details"""
-    doc.validate_dates()
-    doc.validate_customer()
-    doc.set_subscription_id()
-    doc.set_credentials()
+    def validate(self):
+        """Validate subscription details"""
+        self.validate_dates()
+        self.validate_customer()
+        self.set_subscription_id()
+        self.set_credentials()
 
     def before_submit(self):
         """Before activating subscription"""
